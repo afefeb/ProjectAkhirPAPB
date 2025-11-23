@@ -1,6 +1,5 @@
 package com.example.konekumkm.view.ui.detail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -58,12 +56,14 @@ fun DetailScreen(
                 }
                 is DetailUiState.Success -> {
                     val umkm = state.umkm
+                    // Menggunakan Column dengan verticalScroll (Bukan LazyColumn)
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        // Gambar Utama
+                        // --- GAMBAR UTAMA (HEADER) ---
+                        // Cukup pasang di sini saja, tidak perlu pakai 'item {}'
                         AsyncImage(
                             model = umkm.imageUrl,
                             contentDescription = null,
@@ -87,7 +87,11 @@ fun DetailScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // --- BAGIAN YANG SAYA HAPUS ---
+                            // Saya menghapus blok 'item { AsyncImage... }' di sini
+                            // karena menyebabkan error dan membuat gambar muncul 2 kali.
 
                             // Nama UMKM
                             Text(text = umkm.name, style = MaterialTheme.typography.headlineMedium)

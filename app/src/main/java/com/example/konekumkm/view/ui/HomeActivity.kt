@@ -219,7 +219,6 @@ class HomeActivity : ComponentActivity() {
                             }
 
                             // 4. Placeholder Halaman Lain (Agar tidak error saat diklik)
-                            composable(Screen.Produk.route) { PlaceholderScreen("Halaman Produk") }
                             composable(Screen.Blog.route) { PlaceholderScreen("Halaman Blog") }
                             composable(Screen.About.route) { PlaceholderScreen("Halaman About") }
                             composable(Screen.Login.route) { PlaceholderScreen("Halaman Login") }
