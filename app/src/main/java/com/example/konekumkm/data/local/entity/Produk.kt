@@ -5,14 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "produk")
 data class Produk(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = false)
+    val id: String = "",        // ID dari Firebase
 
-    // Ubah ini dari Int ke String agar cocok dengan UMKM.id
-    val umkmId: String,
-
-    val name: String,
-    val price: Double,
-    val description: String,
-    val imageUrl: String,
-    val isFavorite: Boolean = false
+    val umkmId: String = "",    // Penting! Penanda produk ini punya siapa
+    val name: String = "",
+    val price: Double = 0.0,
+    val description: String = "",
+    val imageUrl: String = "",
+    val category: String = ""   // Makanan, Minuman, Kerajinan
 )
