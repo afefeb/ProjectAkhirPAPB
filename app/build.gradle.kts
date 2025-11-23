@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -46,11 +47,43 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))
+    // 1. Navigasi (Materi: Jetpack Navigation)
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+
+    // 2. Internet & API (Materi: REST API)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Untuk ubah JSON ke Data Class
+
+    // 3. Gambar (Supaya bisa load gambar produk dari URL)
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // 4. Peta/Lokasi (Materi: LBS)
+    implementation("com.google.maps.android:maps-compose:4.4.1")
+    // implementation("com.google.android.gms:play-services-maps:18.2.0")
+    // implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    // Tetap butuh ini untuk lokasi user (GPS)
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+
+    // 5. Kamera (Materi: CameraX)
+    val cameraxVersion = "1.3.0"
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+
+    implementation(platform(libs.androidx.compose.bom))
 
     // ROOM
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-firestore") // Database
+    implementation("com.google.firebase:firebase-auth")      // Login
+    implementation("com.google.firebase:firebase-storage")
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)

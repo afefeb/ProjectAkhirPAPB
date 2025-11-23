@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "657606739854",
+    "project_id": "umkmconnect-9b6de",
+    "storage_bucket": "umkmconnect-9b6de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657606739854:android:ee5ffee13870c4b95546df",
+        "android_client_info": {
+          "package_name": "com.example.konekumkm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkEmEhlxnhYvUpBKCrIaYWK_Pu10BXkUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
