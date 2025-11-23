@@ -1,6 +1,7 @@
 package com.example.konekumkm.view.ui.home
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
@@ -38,8 +41,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.runtime.Composable
-
+import com.example.konekumkm.view.viewmodel.AuthState
+import com.example.konekumkm.view.viewmodel.*
 // Import Screen map & add umkm jika sudah dibuat filenya nanti
 
 class HomeActivity : ComponentActivity() {
@@ -51,12 +56,14 @@ class HomeActivity : ComponentActivity() {
                 // Setup Navigasi & ViewModel
                 val navController = rememberNavController()
                 val viewModel: HomeViewModel = viewModel()
+                val viewModelAuth: AuthViewModel = viewModel()
                 val umkmList by viewModel.umkmList.collectAsState()
                 val isLoading by viewModel.isLoading.collectAsState()
 
                 // State untuk Drawer (Menu Samping)
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
+                val authState by viewModelAuth.authState.collectAsState()
 
                 // Fungsi helper untuk pindah halaman & tutup drawer
                 fun navigateTo(route: String) {
@@ -70,28 +77,45 @@ class HomeActivity : ComponentActivity() {
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
-                            // --- HEADER DRAWER ---
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                Text(
-                                    text = "UMKMConnect",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    text = "Platform Ekonomi Lokal",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                            // --- HEADER DRAWER (Dinamis) ---
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                // LOGIKA: Cek Status Login
+                                if (authState is AuthState.Success) {
+                                    val user = (authState as AuthState.Success).user
+                                    Text(
+                                        text = "Halo, ${user.name}!", // Nama User
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(text = user.email, style = MaterialTheme.typography.bodySmall)
+
+                                    // Badge Role
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.secondaryContainer,
+                                        shape = RoundedCornerShape(4.dp),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        Text(
+                                            text = user.role.uppercase(),
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                } else {
+                                    // Jika Belum Login
+                                    Text(
+                                        text = "UMKMConnect",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text("Silakan Login Dahulu")
+                                }
                             }
                             HorizontalDivider()
 
-                            // --- MENU ITEMS ---
+                            // --- MENU ITEMS (Tetap Sama) ---
                             Spacer(modifier = Modifier.height(16.dp))
-
                             NavigationDrawerItem(
                                 label = { Text("Home") },
                                 icon = { Icon(Icons.Default.Home, null) },
@@ -128,19 +152,34 @@ class HomeActivity : ComponentActivity() {
                                 modifier = Modifier.padding(horizontal = 12.dp)
                             )
 
-                            // Spacer agar tombol Login turun ke bawah
                             Spacer(modifier = Modifier.weight(1f))
 
-                            // --- TOMBOL LOGIN ---
-                            Button(
-                                onClick = { navigateTo(Screen.Login.route) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                Icon(Icons.Default.AccountCircle, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Login / Masuk")
+                            // --- TOMBOL LOGIN / LOGOUT (Dinamis) ---
+                            if (authState is AuthState.Success) {
+                                // JIKA SUDAH LOGIN -> TAMPILKAN LOGOUT
+                                Button(
+                                    onClick = {
+                                        viewModelAuth.logout() // Panggil fungsi logout
+                                        scope.launch { drawerState.close() }
+                                        Toast.makeText(this@HomeActivity, "Berhasil Logout", Toast.LENGTH_SHORT).show()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                                ) {
+                                    Icon(Icons.Default.ExitToApp, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Logout / Keluar")
+                                }
+                            } else {
+                                // JIKA BELUM LOGIN -> TAMPILKAN LOGIN
+                                Button(
+                                    onClick = { navigateTo(Screen.Login.route) },
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                                ) {
+                                    Icon(Icons.Default.AccountCircle, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Login / Masuk")
+                                }
                             }
                         }
                     }
@@ -221,7 +260,49 @@ class HomeActivity : ComponentActivity() {
                             // 4. Placeholder Halaman Lain (Agar tidak error saat diklik)
                             composable(Screen.Blog.route) { PlaceholderScreen("Halaman Blog") }
                             composable(Screen.About.route) { PlaceholderScreen("Halaman About") }
-                            composable(Screen.Login.route) { PlaceholderScreen("Halaman Login") }
+                            composable(Screen.Login.route) {
+                                com.example.konekumkm.view.ui.auth.LoginScreen(navController)
+                            }
+                            composable("register") { // String "register" atau Screen.Register.route (jika sudah dibuat di Screen.kt)
+                                com.example.konekumkm.view.ui.auth.RegisterScreen(navController)
+                            }
+                            composable("admin_dashboard") {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text("Selamat Datang ADMIN!", style = MaterialTheme.typography.headlineLarge)
+                                    Text("Dashboard: Top Selling & Requests")
+                                    Button(onClick = {
+                                        // Logout sementara
+                                        navController.navigate(Screen.Login.route) { popUpTo("admin_dashboard") { inclusive = true } }
+                                    }) {
+                                        Text("Logout Admin")
+                                    }
+                                }
+                            }
+                            composable(Screen.AddUmkm.route) { backStackEntry ->
+                                // Cek apakah ada kiriman 'imageUri' dari CameraScreen?
+                                val imageUriString = backStackEntry.savedStateHandle.get<String>("capturedImageUri")
+                                val imageUri = if (imageUriString != null) android.net.Uri.parse(imageUriString) else null
+
+                                com.example.konekumkm.view.ui.umkm.AddUmkmScreen(navController, imageUri)
+                            }
+                            composable("camera_capture") {
+                                com.example.konekumkm.view.ui.camera.CameraScreen(
+                                    navController = navController,
+                                    onImageCaptured = { uri ->
+                                        // Saat foto didapat, simpan URI ke state navigasi sebelumnya (AddUmkm)
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set("capturedImageUri", uri.toString())
+
+                                        // Kembali ke form
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
                         }
                     }
                 }
