@@ -27,7 +27,6 @@ class DetailViewModel : ViewModel() {
     }
 }
 
-// Helper untuk status UI
 sealed class DetailUiState {
     object Loading : DetailUiState()
     data class Success(val umkm: UMKM) : DetailUiState()

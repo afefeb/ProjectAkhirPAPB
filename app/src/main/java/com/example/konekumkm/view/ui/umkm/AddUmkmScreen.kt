@@ -50,12 +50,10 @@ fun AddUmkmScreen(
 
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-    // --- PERBAIKAN DI SINI ---
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Cek ulang izin secara eksplisit untuk memuaskan Linter Android
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED
             ) {
@@ -100,7 +98,6 @@ fun AddUmkmScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- BAGIAN FOTO (Placeholder) ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,7 +114,6 @@ fun AddUmkmScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Form Input
             OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nama UMKM") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -130,7 +126,6 @@ fun AddUmkmScreen(
             OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Deskripsi Singkat") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Tombol Ambil Lokasi GPS
             Button(
                 onClick = { locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -143,7 +138,6 @@ fun AddUmkmScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Tombol Submit
             Button(
                 onClick = {
                     viewModel.submitUMKM(name, category, address, description, imageUri, latitude, longitude)

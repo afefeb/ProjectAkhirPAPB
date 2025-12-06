@@ -34,7 +34,6 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KonekumkmTheme {
-                // Setup Navigasi & ViewModel
                 val navController = rememberNavController()
                 val viewModel: HomeViewModel = viewModel()
                 val viewModelAuth: AuthViewModel = viewModel()
@@ -43,10 +42,8 @@ class HomeActivity : ComponentActivity() {
 
                 val authState by viewModelAuth.authState.collectAsState()
                 
-                // Track current route untuk mengontrol bottom nav
                 var currentRoute by remember { mutableStateOf(Screen.Splash.route) }
                 
-                // Daftar route yang TIDAK boleh menampilkan bottom navigation
                 val routesWithoutBottomNav = listOf(
                     Screen.Splash.route,
                     Screen.Onboarding.route,
@@ -54,13 +51,10 @@ class HomeActivity : ComponentActivity() {
                     Screen.Register.route
                 )
                 
-                // Cek apakah bottom nav harus ditampilkan
                 val showBottomNav = currentRoute !in routesWithoutBottomNav
 
-                // Fungsi helper untuk pindah halaman
                 fun navigateTo(route: String) {
                     navController.navigate(route) {
-                        // Prevent multiple copies of the same destination
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
@@ -69,39 +63,24 @@ class HomeActivity : ComponentActivity() {
                     }
                 }
 
-                // --- KONTEN UTAMA APLIKASI ---
                 Scaffold(
                     topBar = {
-                        // Tampilkan TopBar hanya jika bottom nav ditampilkan
                         if (showBottomNav) {
                             CenterAlignedTopAppBar(
                                 title = {
-                                    Text(
-                                        "UMKMConnect",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold
+                                    androidx.compose.foundation.Image(
+                                        painter = androidx.compose.ui.res.painterResource(id = com.example.konekumkm.R.drawable.logo),
+                                        contentDescription = "Logo",
+                                        modifier = androidx.compose.ui.Modifier.height(40.dp)
                                     )
                                 },
-                                actions = {
-                                    // Tombol Logout di TopBar
-                                    if (authState is AuthState.Success) {
-                                        IconButton(onClick = {
-                                            viewModelAuth.logout()
-                                            val prefManager = com.example.konekumkm.utils.PreferenceManager(this@HomeActivity)
-                                            prefManager.resetOnboarding()
-                                            navController.navigate(Screen.Login.route) {
-                                                popUpTo(0) { inclusive = true }
-                                            }
-                                        }) {
-                                            Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
-                                        }
-                                    }
-                                }
+                                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                    containerColor = androidx.compose.ui.graphics.Color.White
+                                )
                             )
                         }
                     },
                     bottomBar = {
-                        // Bottom Navigation Bar
                         if (showBottomNav) {
                             NavigationBar {
                                 NavigationBarItem(
@@ -132,7 +111,6 @@ class HomeActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-                    // Observer untuk track route changes
                     LaunchedEffect(navController) {
                         navController.currentBackStackEntryFlow.collect { backStackEntry ->
                             currentRoute = backStackEntry.destination.route ?: Screen.Splash.route
@@ -144,7 +122,6 @@ class HomeActivity : ComponentActivity() {
                         startDestination = Screen.Splash.route,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                            // SPLASH SCREEN
                             composable(Screen.Splash.route) {
                                 com.example.konekumkm.view.ui.splash.SplashScreen(
                                     navController = navController,
@@ -152,38 +129,29 @@ class HomeActivity : ComponentActivity() {
                                 )
                             }
                             
-                            // ONBOARDING / LANDING PAGE
                             composable(Screen.Onboarding.route) {
                                 com.example.konekumkm.view.ui.onboarding.OnboardingScreen(navController)
                             }
                             
-                            // 1. HOME
                             composable(Screen.Home.route) {
-                                if (isLoading) {
-                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                        CircularProgressIndicator()
-                                    }
-                                } else if (umkmList.isEmpty()) {
-                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                        Text("Tidak ada data UMKM.")
-                                    }
-                                } else {
-                                    LazyColumn {
-                                        items(umkmList) { umkm ->
-                                            UMKMListItem(umkm = umkm) {
-                                                navController.navigate(Screen.Detail.createRoute(umkm.id))
-                                            }
-                                        }
-                                    }
-                                }
+                                HomeScreen(
+                                    navController = navController,
+                                    homeViewModel = viewModel,
+                                    authViewModel = viewModelAuth
+                                )
+                            }
+                            
+                            composable(Screen.Search.route) {
+                                com.example.konekumkm.view.ui.search.SearchScreen(
+                                    navController = navController,
+                                    homeViewModel = viewModel
+                                )
                             }
 
-                            // 2. MAP (Panggil MapScreen yang sudah Anda buat)
                             composable(Screen.Map.route) {
                                 com.example.konekumkm.view.ui.map.MapScreen(navController, viewModel)
                             }
 
-                            // 3. DETAIL (Panggil DetailScreen)
                             composable(Screen.Detail.route) { backStackEntry ->
                                 val umkmId = backStackEntry.arguments?.getString("umkmId") ?: ""
                                 com.example.konekumkm.view.ui.detail.DetailScreen(umkmId, navController)
@@ -194,7 +162,6 @@ class HomeActivity : ComponentActivity() {
                                 )
                             }
 
-                            // 4. Placeholder Halaman Lain (Agar tidak error saat diklik)
                             composable(Screen.Blog.route) { PlaceholderScreen("Halaman Blog") }
                             composable(Screen.About.route) { PlaceholderScreen("Halaman About") }
                             composable(Screen.Login.route) {
@@ -203,6 +170,22 @@ class HomeActivity : ComponentActivity() {
                             composable(Screen.Register.route) {
                                 com.example.konekumkm.view.ui.auth.RegisterScreen(navController)
                             }
+                            
+                            composable(Screen.Cart.route) {
+                                com.example.konekumkm.view.ui.cart.CartScreen(navController)
+                            }
+                            composable(Screen.PaymentMethod.route) {
+                                com.example.konekumkm.view.ui.cart.PaymentMethodScreen(navController)
+                            }
+                            composable(Screen.Payment.route) { backStackEntry ->
+                                val paymentMethod = backStackEntry.arguments?.getString("paymentMethod") ?: ""
+                                com.example.konekumkm.view.ui.cart.PaymentScreen(navController, paymentMethod)
+                            }
+                            composable(Screen.OrderSuccess.route) { backStackEntry ->
+                                val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+                                com.example.konekumkm.view.ui.cart.OrderSuccessScreen(navController, orderId)
+                            }
+                            
                             composable("admin_dashboard") {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
@@ -212,7 +195,6 @@ class HomeActivity : ComponentActivity() {
                                     Text("Selamat Datang ADMIN!", style = MaterialTheme.typography.headlineLarge)
                                     Text("Dashboard: Top Selling & Requests")
                                     Button(onClick = {
-                                        // Logout sementara
                                         navController.navigate(Screen.Login.route) { popUpTo("admin_dashboard") { inclusive = true } }
                                     }) {
                                         Text("Logout Admin")
@@ -229,7 +211,6 @@ class HomeActivity : ComponentActivity() {
         }
     }
 
-// Komponen sementara untuk halaman yang belum jadi
 @Composable
 fun PlaceholderScreen(title: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

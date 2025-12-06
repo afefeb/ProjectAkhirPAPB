@@ -31,7 +31,6 @@ fun SplashScreen(
     val prefManager = PreferenceManager(context)
     val authState by authViewModel.authState.collectAsState()
 
-    // Tampilkan logo terlebih dahulu
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -48,19 +47,14 @@ fun SplashScreen(
         }
     }
 
-    // Auto navigate setelah 2 detik
     LaunchedEffect(Unit) {
-        delay(2000) // 2 detik
+        delay(2000)
         
         val isOnboardingDone = prefManager.isOnboardingCompleted()
         
-        // Cek status login dan onboarding
         val destination = when {
-            // Jika sudah login, langsung ke Home
             authState is AuthState.Success -> Screen.Home.route
-            // Jika belum pernah lihat onboarding (first time user), tampilkan onboarding
             !isOnboardingDone -> Screen.Onboarding.route
-            // Jika sudah lihat onboarding tapi belum login, ke Login
             else -> Screen.Login.route
         }
         

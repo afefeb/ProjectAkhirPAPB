@@ -11,23 +11,18 @@ import kotlinx.coroutines.launch
 class AuthViewModel : ViewModel() {
     private val repository = AuthRepository()
 
-    // Ubah default state jadi Loading dulu biar aman
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
-    // --- UPDATE BAGIAN INI ---
     init {
         val currentUser = repository.getCurrentUser()
         if (currentUser != null) {
-            // Jika di Firebase ada user, kita anggap Login Sukses!
-            // Kita ambil data role sederhana dulu (atau fetch ulang dari Firestore jika mau lengkap)
-            // Untuk sekarang, kita pakai data dasar dari Auth
             _authState.value = AuthState.Success(
                 User(
                     id = currentUser.uid,
                     name = currentUser.displayName ?: "User",
                     email = currentUser.email ?: "",
-                    role = "user" // Default sementara, idealnya fetch dari Firestore lagi
+                    role = "user"
                 )
             )
         }

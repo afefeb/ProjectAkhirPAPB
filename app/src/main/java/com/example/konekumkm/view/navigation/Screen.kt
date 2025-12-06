@@ -4,6 +4,7 @@ sealed class Screen(val route: String) {
     object Splash : Screen("splash")  // Splash Screen
     object Onboarding : Screen("onboarding")  // Landing Page
     object Home : Screen("home")
+    object Search : Screen("search")
     object Produk : Screen("produk") // Baru
     object Map : Screen("map")
     object Blog : Screen("blog")     // Baru
@@ -15,5 +16,16 @@ sealed class Screen(val route: String) {
 
     object Detail : Screen("detail/{umkmId}") {
         fun createRoute(umkmId: String) = "detail/$umkmId"
+    }
+    
+    object Cart : Screen("cart")
+    object PaymentMethod : Screen("payment_method")
+    
+    object Payment : Screen("payment/{paymentMethod}") {
+        fun createRoute(paymentMethod: String) = "payment/$paymentMethod"
+    }
+    
+    object OrderSuccess : Screen("order_success/{orderId}") {
+        fun createRoute(orderId: String) = "order_success/$orderId"
     }
 }

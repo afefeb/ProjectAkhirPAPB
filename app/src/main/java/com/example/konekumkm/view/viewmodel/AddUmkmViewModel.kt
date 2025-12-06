@@ -11,15 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-// Pastikan extends AndroidViewModel dan menerima application di constructor
 class AddUmkmViewModel(application: Application) : AndroidViewModel(application) {
 
     private val umkmRepository = UMKMRepository()
 
-    // Menggunakan context dari application untuk ImageRepository (Base64)
     private val imageRepository = ImageRepository(application.applicationContext)
 
-    // State UI
     private val _uiState = MutableStateFlow<AddState>(AddState.Idle)
     val uiState: StateFlow<AddState> = _uiState
 
@@ -32,7 +29,6 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
                 return@launch
             }
 
-            // 1. Ubah Gambar ke Base64
             val base64Result = imageRepository.imageUriToBase64(imageUri)
             val finalImageString = base64Result.getOrNull()
 
@@ -41,18 +37,16 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
                 return@launch
             }
 
-            // 2. Buat Object UMKM
             val newUMKM = UMKM(
                 name = name,
                 category = category,
                 address = address,
                 description = desc,
-                imageUrl = finalImageString, // Simpan String Base64
+                imageUrl = finalImageString,
                 latitude = lat,
                 longitude = lng
             )
 
-            // 3. Simpan ke Firestore
             umkmRepository.addUMKM(newUMKM) { success ->
                 if (success) _uiState.value = AddState.Success
                 else _uiState.value = AddState.Error("Gagal simpan ke database")
@@ -63,8 +57,6 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
     fun resetState() { _uiState.value = AddState.Idle }
 }
 
-// --- JANGAN LUPA BAGIAN INI ---
-// Definisi Sealed Class untuk State (Harus ada agar 'AddState' dikenali)
 sealed class AddState {
     object Idle : AddState()
     object Loading : AddState()

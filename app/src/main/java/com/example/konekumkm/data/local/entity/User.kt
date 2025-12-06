@@ -4,5 +4,5 @@ data class User(
     val id: String = "",
     val name: String = "",
     val email: String = "",
-    val role: String = "user" // Default role adalah 'user'
+    val role: String = "user"
 )

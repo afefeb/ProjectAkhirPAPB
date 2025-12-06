@@ -11,18 +11,15 @@ import kotlinx.coroutines.launch
 class ProductViewModel : ViewModel() {
     private val repository = ProductRepository()
 
-    // State untuk list semua produk
     private val _allProducts = MutableStateFlow<List<Produk>>(emptyList())
     val allProducts: StateFlow<List<Produk>> = _allProducts
 
-    // State untuk list produk spesifik (per UMKM)
     private val _umkmProducts = MutableStateFlow<List<Produk>>(emptyList())
     val umkmProducts: StateFlow<List<Produk>> = _umkmProducts
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    // Panggil ini di Halaman "Produk"
     fun fetchAllProducts() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -31,7 +28,6 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-    // Panggil ini di Halaman "Detail UMKM"
     fun fetchProductsByUmkm(umkmId: String) {
         viewModelScope.launch {
             _umkmProducts.value = repository.getProductsByUmkm(umkmId)

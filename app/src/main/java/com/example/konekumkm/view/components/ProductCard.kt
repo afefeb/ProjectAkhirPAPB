@@ -2,8 +2,11 @@ package com.example.konekumkm.view.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -15,7 +18,11 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun ProductCard(produk: Produk, onClick: () -> Unit) {
+fun ProductCard(
+    produk: Produk, 
+    onClick: () -> Unit,
+    onAddToCart: (() -> Unit)? = null
+) {
     // Format Rupiah
     val formatRp = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(produk.price)
 
@@ -48,11 +55,34 @@ fun ProductCard(produk: Produk, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatRp,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = formatRp,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    // Add to Cart Button
+                    if (onAddToCart != null) {
+                        IconButton(
+                            onClick = onAddToCart,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddShoppingCart,
+                                contentDescription = "Add to Cart",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }

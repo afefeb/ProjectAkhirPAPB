@@ -2,11 +2,10 @@ package com.example.konekumkm.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.Exclude // Opsional, biar ID ga ikut ke-save double di body firebase
+import com.google.firebase.firestore.Exclude
 
 @Entity(tableName = "umkm")
 data class UMKM(
-    // Ubah Int jadi String & matikan autoGenerate
     @PrimaryKey(autoGenerate = false)
     val id: String = "",
 
