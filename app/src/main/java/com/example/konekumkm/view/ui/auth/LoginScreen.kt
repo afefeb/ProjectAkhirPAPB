@@ -97,7 +97,7 @@ fun LoginScreen(
             text = "Belum punya akun? Daftar disini",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
-                navController.navigate("register") // Kita akan buat rute ini
+                navController.navigate(Screen.Register.route)
             }
         )
     }

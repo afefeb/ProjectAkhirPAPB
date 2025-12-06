@@ -34,7 +34,6 @@ import com.google.android.gms.location.LocationServices
 @Composable
 fun AddUmkmScreen(
     navController: NavController,
-    capturedImageUri: Uri? = null,
     viewModel: AddUmkmViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -45,13 +44,9 @@ fun AddUmkmScreen(
     var category by remember { mutableStateOf("Kuliner") }
     var address by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(capturedImageUri) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var latitude by remember { mutableStateOf(0.0) }
     var longitude by remember { mutableStateOf(0.0) }
-
-    LaunchedEffect(capturedImageUri) {
-        if (capturedImageUri != null) imageUri = capturedImageUri
-    }
 
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -105,27 +100,19 @@ fun AddUmkmScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- BAGIAN FOTO ---
+            // --- BAGIAN FOTO (Placeholder) ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(Color.LightGray)
-                    .clickable {
-                        navController.navigate("camera_capture")
-                    },
+                    .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                if (imageUri != null) {
-                    AsyncImage(
-                        model = imageUri,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Text("Sentuh untuk Ambil Foto (Kamera)")
-                }
+                Text(
+                    text = "Foto UMKM\n(Fitur upload gambar akan ditambahkan)",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -39,7 +39,8 @@ fun RegisterScreen(
         when (val state = authState) {
             is AuthState.Success -> {
                 Toast.makeText(context, "Registrasi Berhasil! Silakan Login.", Toast.LENGTH_SHORT).show()
-                viewModel.resetState()
+                // Logout otomatis setelah registrasi agar user harus login manual
+                viewModel.logout()
                 // Kembali ke halaman Login setelah sukses
                 navController.popBackStack()
             }

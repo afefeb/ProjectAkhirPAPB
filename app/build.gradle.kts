@@ -85,6 +85,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")      // Login
     implementation("com.google.firebase:firebase-storage")
 
+    // Lottie Animation
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)

@@ -1,6 +1,8 @@
 package com.example.konekumkm.view.navigation
 
 sealed class Screen(val route: String) {
+    object Splash : Screen("splash")  // Splash Screen
+    object Onboarding : Screen("onboarding")  // Landing Page
     object Home : Screen("home")
     object Produk : Screen("produk") // Baru
     object Map : Screen("map")
