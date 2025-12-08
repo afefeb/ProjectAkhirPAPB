@@ -58,6 +58,22 @@ class AuthViewModel : ViewModel() {
         repository.logout()
         _authState.value = AuthState.Idle
     }
+    
+    fun checkAuthState() {
+        val currentUser = repository.getCurrentUser()
+        _authState.value = if (currentUser != null) {
+            AuthState.Success(
+                User(
+                    id = currentUser.uid,
+                    name = currentUser.displayName ?: "User",
+                    email = currentUser.email ?: "",
+                    role = "user"
+                )
+            )
+        } else {
+            AuthState.Idle
+        }
+    }
 }
 
 sealed class AuthState {

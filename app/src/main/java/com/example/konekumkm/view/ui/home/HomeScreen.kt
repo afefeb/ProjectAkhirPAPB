@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -56,8 +57,9 @@ fun HomeScreen(
     val authState by authViewModel.authState.collectAsState()
     val products by productViewModel.allProducts.collectAsState()
     
-    // Load data
+    // Load data dan check auth state
     LaunchedEffect(Unit) {
+        authViewModel.checkAuthState()
         productViewModel.fetchAllProducts()
     }
 
@@ -177,7 +179,7 @@ fun HomeScreen(
                         }
                         
                         Text(
-                            text = "Halo ! $userName",
+                            text = "Halo !",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White

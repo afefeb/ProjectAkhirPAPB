@@ -38,6 +38,11 @@ fun ProfileScreen(
 ) {
     val authState by viewModel.authState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
+    
+    // Check auth state saat screen dibuka
+    LaunchedEffect(Unit) {
+        viewModel.checkAuthState()
+    }
 
     // Ambil data user dari authState
     val currentUser = when (val state = authState) {
@@ -97,6 +102,15 @@ fun ProfileScreen(
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)
+                },
+                onExploreUmkm = {
+                    navController.navigate(Screen.Map.route)
+                },
+                onViewProducts = {
+                    navController.navigate(Screen.Produk.route)
+                },
+                onHelp = {
+                    navController.navigate(Screen.Help.route)
                 }
             )
         } else {
@@ -110,9 +124,12 @@ fun ProfileScreen(
                 onEditProfile = { showEditDialog = true },
                 onMyOrders = { navController.navigate(Screen.OrderHistory.route) },
                 onFavorites = { /* TODO: Navigate to favorites */ },
-                onHelp = { /* TODO: Navigate to help */ },
+                onHelp = { navController.navigate(Screen.Help.route) },
                 onLogout = {
                     viewModel.logout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -123,7 +140,10 @@ fun ProfileScreen(
 fun GuestProfileView(
     modifier: Modifier = Modifier,
     onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onExploreUmkm: () -> Unit = {},
+    onViewProducts: () -> Unit = {},
+    onHelp: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -224,19 +244,22 @@ fun GuestProfileView(
         GuestMenuItem(
             icon = Icons.Outlined.Store,
             title = "Jelajahi UMKM",
-            subtitle = "Lihat semua UMKM lokal"
+            subtitle = "Lihat semua UMKM lokal",
+            onClick = onExploreUmkm
         )
 
         GuestMenuItem(
             icon = Icons.Outlined.Inventory,
             title = "Lihat Produk",
-            subtitle = "Temukan produk berkualitas"
+            subtitle = "Temukan produk berkualitas",
+            onClick = onViewProducts
         )
 
         GuestMenuItem(
             icon = Icons.Outlined.Info,
             title = "Bantuan",
-            subtitle = "Pusat bantuan pengguna"
+            subtitle = "Pusat bantuan pengguna",
+            onClick = onHelp
         )
     }
 }
@@ -425,12 +448,14 @@ fun ProfileMenuItem(
 fun GuestMenuItem(
     icon: ImageVector,
     title: String,
-    subtitle: String
+    subtitle: String,
+    onClick: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = Color.White
     ) {

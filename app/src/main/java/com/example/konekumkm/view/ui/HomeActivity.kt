@@ -162,10 +162,16 @@ class HomeActivity : ComponentActivity() {
                             composable(Screen.Blog.route) { PlaceholderScreen("Halaman Blog") }
                             composable(Screen.About.route) { PlaceholderScreen("Halaman About") }
                             composable(Screen.Login.route) {
-                                com.example.konekumkm.view.ui.auth.LoginScreen(navController)
+                                com.example.konekumkm.view.ui.auth.LoginScreen(
+                                    navController = navController,
+                                    viewModel = viewModelAuth
+                                )
                             }
                             composable(Screen.Register.route) {
-                                com.example.konekumkm.view.ui.auth.RegisterScreen(navController)
+                                com.example.konekumkm.view.ui.auth.RegisterScreen(
+                                    navController = navController,
+                                    viewModel = viewModelAuth
+                                )
                             }
                             
                             composable(Screen.Cart.route) {
@@ -188,6 +194,9 @@ class HomeActivity : ComponentActivity() {
                             }
                             composable(Screen.OrderHistory.route) {
                                 com.example.konekumkm.view.ui.order.OrderHistoryScreen(navController)
+                            }
+                            composable(Screen.Help.route) {
+                                com.example.konekumkm.view.ui.help.HelpScreen(navController)
                             }
                             composable("admin_dashboard") {
                                 Column(

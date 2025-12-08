@@ -47,7 +47,9 @@ fun SplashScreen(
         }
     }
 
-    LaunchedEffect(authState) {
+    LaunchedEffect(Unit) {
+        // Check auth state dari Firebase
+        authViewModel.checkAuthState()
         delay(2000)
         
         when (authState) {

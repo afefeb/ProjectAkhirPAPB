@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -55,6 +56,7 @@ fun ProductListScreen(
     val itemsPerPage = 8
     
     LaunchedEffect(Unit) {
+        authViewModel.checkAuthState()
         viewModel.fetchAllProducts()
     }
     
