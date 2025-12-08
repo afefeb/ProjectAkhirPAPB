@@ -37,10 +37,6 @@ class HomeActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val viewModel: HomeViewModel = viewModel()
                 val viewModelAuth: AuthViewModel = viewModel()
-                val umkmList by viewModel.umkmList.collectAsState()
-                val isLoading by viewModel.isLoading.collectAsState()
-
-                val authState by viewModelAuth.authState.collectAsState()
                 
                 var currentRoute by remember { mutableStateOf(Screen.Splash.route) }
                 
@@ -64,22 +60,22 @@ class HomeActivity : ComponentActivity() {
                 }
 
                 Scaffold(
-                    topBar = {
-                        if (showBottomNav) {
-                            CenterAlignedTopAppBar(
-                                title = {
-                                    androidx.compose.foundation.Image(
-                                        painter = androidx.compose.ui.res.painterResource(id = com.example.konekumkm.R.drawable.logo),
-                                        contentDescription = "Logo",
-                                        modifier = androidx.compose.ui.Modifier.height(40.dp)
-                                    )
-                                },
-                                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                    containerColor = androidx.compose.ui.graphics.Color.White
-                                )
-                            )
-                        }
-                    },
+                    // topBar = {
+                    //     if (showBottomNav) {
+                    //         CenterAlignedTopAppBar(
+                    //             title = {
+                    //                 androidx.compose.foundation.Image(
+                    //                     painter = androidx.compose.ui.res.painterResource(id = com.example.konekumkm.R.drawable.logo),
+                    //                     contentDescription = "Logo",
+                    //                     modifier = androidx.compose.ui.Modifier.height(24.dp)
+                    //                 )
+                    //             },
+                    //             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    //                 containerColor = androidx.compose.ui.graphics.Color.White
+                    //             )
+                    //         )
+                    //     }
+                    // },
                     bottomBar = {
                         if (showBottomNav) {
                             NavigationBar {
@@ -158,7 +154,8 @@ class HomeActivity : ComponentActivity() {
                             }
                             composable(Screen.Produk.route) {
                                 com.example.konekumkm.view.ui.product.ProductListScreen(
-                                    navController = navController
+                                    navController = navController,
+                                    authViewModel = viewModelAuth
                                 )
                             }
 
@@ -188,6 +185,9 @@ class HomeActivity : ComponentActivity() {
 
                             composable(Screen.Profile.route) {
                                 com.example.konekumkm.view.ui.profile.ProfileScreen(navController)
+                            }
+                            composable(Screen.OrderHistory.route) {
+                                com.example.konekumkm.view.ui.order.OrderHistoryScreen(navController)
                             }
                             composable("admin_dashboard") {
                                 Column(

@@ -91,6 +91,22 @@ fun LoginScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(
+            onClick = {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                "Masuk sebagai Tamu",
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(

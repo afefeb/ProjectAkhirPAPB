@@ -16,7 +16,7 @@ sealed class Screen(val route: String) {
     object AddUmkm : Screen("add_umkm")
 
     object Profile : Screen("profile")
-
+    object OrderHistory : Screen("order_history")
 
     object Detail : Screen("detail/{umkmId}") {
         fun createRoute(umkmId: String) = "detail/$umkmId"

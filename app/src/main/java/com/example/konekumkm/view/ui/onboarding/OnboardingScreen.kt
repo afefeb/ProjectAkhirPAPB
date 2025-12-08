@@ -68,7 +68,6 @@ fun OnboardingScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Pager untuk slide
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.weight(1f)
@@ -76,14 +75,12 @@ fun OnboardingScreen(navController: NavController) {
                 OnboardingPageContent(pages[page])
             }
 
-            // Indikator & Tombol
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Page Indicator (Dots)
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(bottom = 24.dp)
@@ -111,51 +108,54 @@ fun OnboardingScreen(navController: NavController) {
                     }
                 }
 
-                // Tombol Navigasi
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Tombol Skip (hanya muncul jika bukan halaman terakhir)
-                    if (pagerState.currentPage < pages.size - 1) {
+                if (pagerState.currentPage < pages.size - 1) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         TextButton(
                             onClick = {
-                                prefManager.setOnboardingCompleted(true)
-                                navController.navigate(Screen.Login.route) {
-                                    popUpTo("onboarding") { inclusive = true }
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pages.size - 1)
                                 }
                             }
                         ) {
                             Text("Lewati", fontSize = 16.sp)
                         }
-                    } else {
-                        Spacer(modifier = Modifier.width(1.dp))
-                    }
 
-                    // Tombol Next / CTA
-                    Button(
-                        onClick = {
-                            if (pagerState.currentPage < pages.size - 1) {
-                                // Pindah ke halaman berikutnya
+                        Button(
+                            onClick = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 }
-                            } else {
-                                // Halaman terakhir, tandai onboarding selesai & pindah ke Login
-                                prefManager.setOnboardingCompleted(true)
-                                navController.navigate(Screen.Login.route) {
-                                    popUpTo("onboarding") { inclusive = true }
-                                }
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.height(50.dp)
+                        ) {
+                            Text(
+                                text = "Selanjutnya",
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            prefManager.setOnboardingCompleted(true)
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.Onboarding.route) { inclusive = true }
                             }
                         },
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.height(50.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
                     ) {
                         Text(
-                            text = if (pagerState.currentPage < pages.size - 1) "Selanjutnya" else "Ayo Jelajahi UMKM!",
+                            text = "Ayo Jelajahi UMKM!",
                             fontSize = 16.sp,
-                            fontWeight = if (pagerState.currentPage == pages.size - 1) FontWeight.Bold else FontWeight.Normal,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -173,7 +173,6 @@ fun OnboardingPageContent(page: OnboardingPage) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Lottie Animation
         val composition by rememberLottieComposition(
             LottieCompositionSpec.Url(page.lottieUrl)
         )
@@ -191,7 +190,6 @@ fun OnboardingPageContent(page: OnboardingPage) {
                 .padding(bottom = 32.dp)
         )
 
-        // Title
         Text(
             text = page.title,
             fontSize = 28.sp,
@@ -201,7 +199,6 @@ fun OnboardingPageContent(page: OnboardingPage) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Description
         Text(
             text = page.description,
             fontSize = 16.sp,

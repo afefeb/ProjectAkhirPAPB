@@ -47,19 +47,25 @@ fun SplashScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(authState) {
         delay(2000)
         
-        val isOnboardingDone = prefManager.isOnboardingCompleted()
-        
-        val destination = when {
-            authState is AuthState.Success -> Screen.Home.route
-            !isOnboardingDone -> Screen.Onboarding.route
-            else -> Screen.Login.route
-        }
-        
-        navController.navigate(destination) {
-            popUpTo(Screen.Splash.route) { inclusive = true }
+        when (authState) {
+            is AuthState.Success -> {
+                // User sudah login, langsung ke Home
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
+            }
+            is AuthState.Error, AuthState.Idle -> {
+                // User belum login, ke Onboarding/Landing Page
+                navController.navigate(Screen.Onboarding.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
+            }
+            else -> {
+                // Loading state, tunggu
+            }
         }
     }
 }

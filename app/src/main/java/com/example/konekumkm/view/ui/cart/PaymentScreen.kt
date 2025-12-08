@@ -33,7 +33,6 @@ fun PaymentScreen(
 ) {
     val selectedItems by cartViewModel.selectedItems.collectAsState()
     
-    // Calculate total in composable to ensure reactivity
     val totalPrice = remember(selectedItems) {
         selectedItems.sumOf { it.productPrice * it.quantity }
     }
@@ -60,7 +59,6 @@ fun PaymentScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Payment Method Info
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -83,7 +81,6 @@ fun PaymentScreen(
                 }
             }
             
-            // Order Summary
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -140,7 +137,6 @@ fun PaymentScreen(
                 }
             }
             
-            // Payment Instructions
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -163,7 +159,6 @@ fun PaymentScreen(
                 }
             }
             
-            // Confirm Payment Button
             item {
                 Button(
                     onClick = {

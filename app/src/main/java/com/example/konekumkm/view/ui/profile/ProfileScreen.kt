@@ -108,9 +108,8 @@ fun ProfileScreen(
                 userName = currentUser?.name ?: "",
                 userEmail = currentUser?.email ?: "",
                 onEditProfile = { showEditDialog = true },
-                onMyOrders = { /* TODO: Navigate to orders */ },
+                onMyOrders = { navController.navigate(Screen.OrderHistory.route) },
                 onFavorites = { /* TODO: Navigate to favorites */ },
-                onSettings = { /* TODO: Navigate to settings */ },
                 onHelp = { /* TODO: Navigate to help */ },
                 onLogout = {
                     viewModel.logout()
@@ -250,7 +249,6 @@ fun LoggedInProfileView(
     onEditProfile: () -> Unit,
     onMyOrders: () -> Unit,
     onFavorites: () -> Unit,
-    onSettings: () -> Unit,
     onHelp: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -336,13 +334,6 @@ fun LoggedInProfileView(
                     title = "Favorit",
                     subtitle = "UMKM & produk favorit",
                     onClick = onFavorites
-                )
-
-                ProfileMenuItem(
-                    icon = Icons.Outlined.Settings,
-                    title = "Pengaturan",
-                    subtitle = "Atur preferensi aplikasi",
-                    onClick = onSettings
                 )
 
                 ProfileMenuItem(
