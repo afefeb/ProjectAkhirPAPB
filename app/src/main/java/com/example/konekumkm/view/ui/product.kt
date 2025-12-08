@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -17,12 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.konekumkm.view.navigation.Screen
 import com.example.konekumkm.view.components.ProductCard
+import com.example.konekumkm.view.viewmodel.AuthState
+import com.example.konekumkm.view.viewmodel.AuthViewModel
 import com.example.konekumkm.view.viewmodel.CartViewModel
 import com.example.konekumkm.view.viewmodel.HomeViewModel
 import com.example.konekumkm.view.viewmodel.ProductViewModel
@@ -34,11 +38,13 @@ fun ProductListScreen(
     navController: NavController,
     viewModel: ProductViewModel = viewModel(),
     cartViewModel: CartViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
 ) {
     val products by viewModel.allProducts.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val cartItemCount by cartViewModel.cartItemCount.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
     
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Semua") }
@@ -81,11 +87,65 @@ fun ProductListScreen(
     val addToCartMessage by cartViewModel.addToCartMessage.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     
+    var showLoginDialog by remember { mutableStateOf(false) }
+    
     LaunchedEffect(addToCartMessage) {
         addToCartMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             cartViewModel.clearAddToCartMessage()
         }
+    }
+    
+    if (showLoginDialog) {
+        AlertDialog(
+            onDismissRequest = { showLoginDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Login Diperlukan",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            showLoginDialog = false
+                            navController.navigate(Screen.Login.route)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Login")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { showLoginDialog = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Tutup")
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
     }
     
     Scaffold(
@@ -211,15 +271,19 @@ fun ProductListScreen(
                                         onClick = {
                                         },
                                         onAddToCart = {
-                                            homeViewModel.umkmList.value.find { it.id == produk.umkmId }?.let { umkm ->
-                                                cartViewModel.addToCart(
-                                                    productId = produk.id,
-                                                    productName = produk.name,
-                                                    productPrice = produk.price,
-                                                    productImage = produk.imageUrl,
-                                                    umkmId = produk.umkmId,
-                                                    umkmName = umkm.name
-                                                )
+                                            if (authState is AuthState.Success) {
+                                                homeViewModel.umkmList.value.find { it.id == produk.umkmId }?.let { umkm ->
+                                                    cartViewModel.addToCart(
+                                                        productId = produk.id,
+                                                        productName = produk.name,
+                                                        productPrice = produk.price,
+                                                        productImage = produk.imageUrl,
+                                                        umkmId = produk.umkmId,
+                                                        umkmName = umkm.name
+                                                    )
+                                                }
+                                            } else {
+                                                showLoginDialog = true
                                             }
                                         }
                                     )
@@ -242,18 +306,20 @@ fun ProductListScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Button(
                                 onClick = { if (currentPage > 1) currentPage-- },
                                 enabled = currentPage > 1,
+                                modifier = Modifier.height(36.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text("Prev")
+                                Text("Prev", fontSize = 14.sp)
                             }
                             
                             Row(
@@ -274,21 +340,22 @@ fun ProductListScreen(
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = MaterialTheme.colorScheme.primary
                                             ),
-                                            modifier = Modifier.size(40.dp),
+                                            modifier = Modifier.size(36.dp),
                                             contentPadding = PaddingValues(0.dp)
                                         ) {
                                             Text(
                                                 text = page.toString(),
-                                                fontWeight = FontWeight.Bold
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp
                                             )
                                         }
                                     } else {
                                         OutlinedButton(
                                             onClick = { currentPage = page },
-                                            modifier = Modifier.size(40.dp),
+                                            modifier = Modifier.size(36.dp),
                                             contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text(page.toString())
+                                            Text(page.toString(), fontSize = 14.sp)
                                         }
                                     }
                                 }
@@ -297,11 +364,13 @@ fun ProductListScreen(
                             Button(
                                 onClick = { if (currentPage < totalPages) currentPage++ },
                                 enabled = currentPage < totalPages,
+                                modifier = Modifier.height(36.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text("Next")
+                                Text("Next", fontSize = 14.sp)
                             }
                         }
                         

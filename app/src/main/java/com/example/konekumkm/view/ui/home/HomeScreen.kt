@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -82,11 +83,66 @@ fun HomeScreen(
     val addToCartMessage by cartViewModel.addToCartMessage.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     
+    // Dialog for login prompt
+    var showLoginDialog by remember { mutableStateOf(false) }
+    
     LaunchedEffect(addToCartMessage) {
         addToCartMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             cartViewModel.clearAddToCartMessage()
         }
+    }
+    
+    if (showLoginDialog) {
+        AlertDialog(
+            onDismissRequest = { showLoginDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Login Diperlukan",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang atau melakukan checkout.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            showLoginDialog = false
+                            navController.navigate(Screen.Login.route)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Login")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { showLoginDialog = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Tutup")
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
     }
     
     Scaffold(
@@ -362,15 +418,19 @@ fun HomeScreen(
                                     // TODO: Navigate to product detail
                                 },
                                 onAddToCart = {
-                                    homeViewModel.umkmList.value.find { it.id == produk.umkmId }?.let { umkm ->
-                                        cartViewModel.addToCart(
-                                            productId = produk.id,
-                                            productName = produk.name,
-                                            productPrice = produk.price,
-                                            productImage = produk.imageUrl,
-                                            umkmId = produk.umkmId,
-                                            umkmName = umkm.name
-                                        )
+                                    if (authState is AuthState.Success) {
+                                        homeViewModel.umkmList.value.find { it.id == produk.umkmId }?.let { umkm ->
+                                            cartViewModel.addToCart(
+                                                productId = produk.id,
+                                                productName = produk.name,
+                                                productPrice = produk.price,
+                                                productImage = produk.imageUrl,
+                                                umkmId = produk.umkmId,
+                                                umkmName = umkm.name
+                                            )
+                                        }
+                                    } else {
+                                        showLoginDialog = true
                                     }
                                 }
                             )

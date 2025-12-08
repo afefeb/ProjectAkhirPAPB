@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-//import com.example.konekumkm.data.local.dao.OrderDao
+import com.example.konekumkm.data.local.dao.OrderDao
 //import com.example.konekumkm.data.local.dao.ProdukDao
 import com.example.konekumkm.data.local.dao.CartDao
 import com.example.konekumkm.data.local.dao.UMKMDao
@@ -23,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun umkmDao(): UMKMDao
     abstract fun cartDao(): CartDao
 //    abstract fun produkDao(): ProdukDao
-//    abstract fun orderDao(): OrderDao
+    abstract fun orderDao(): OrderDao
 
     companion object {
         @Volatile
