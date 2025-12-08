@@ -20,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.konekumkm.data.local.entity.Order
 import com.example.konekumkm.data.local.entity.OrderItem
-import com.example.konekumkm.viewmodel.OrderHistoryViewModel
+import com.example.konekumkm.view.viewmodel.OrderHistoryViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.NumberFormat

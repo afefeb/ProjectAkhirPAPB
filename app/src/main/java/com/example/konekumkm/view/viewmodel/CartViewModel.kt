@@ -140,7 +140,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
     fun getSelectedItemsCount(): Int {
         return _selectedItems.value.sumOf { it.quantity }
     }
-    
+
     suspend fun createOrder(paymentMethod: String): String {
         val orderId = UUID.randomUUID().toString()
         val orderItems = _selectedItems.value.map { cartItem ->
@@ -154,24 +154,36 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                 quantity = cartItem.quantity
             )
         }
-        
+
         val totalAmount = orderItems.sumOf { it.productPrice * it.quantity }
-        
+
+        // For success screen
         _lastOrderItems.value = orderItems
         _lastOrderTotal.value = totalAmount
-        
+
+        // WAJIB SIMPAN userId untuk history
+        val currentUserId = getCurrentUserId()
+
         val order = Order(
             id = orderId,
-            userId = getCurrentUserId(),
+            userId = currentUserId,     // <-- WAJIB! Agar OrderHistory bisa membaca
             items = Gson().toJson(orderItems),
             totalAmount = totalAmount,
             paymentMethod = paymentMethod,
             orderDate = System.currentTimeMillis(),
             status = "completed"
         )
-        
-        cartDao.deleteSelectedItems(getCurrentUserId())
-        
+
+        // === FIX PENTING ===
+        // SIMPAN ORDER KE ROOM DATABASE
+        val database = AppDatabase.getDatabase(getApplication())
+        val orderDao = database.orderDao()
+        orderDao.insertOrder(order)
+
+        // hapus item yang sudah dibeli
+        cartDao.deleteSelectedItems(currentUserId)
+
         return orderId
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.konekumkm.viewmodel
+package com.example.konekumkm.view.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class OrderHistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = AppDatabase.getDatabase(application)
+    private val database = AppDatabase.Companion.getDatabase(application)
     private val orderDao = database.orderDao()
     private val auth = FirebaseAuth.getInstance()
 
