@@ -146,7 +146,7 @@ fun HomeScreen(
                             )
                         }
                         IconButton(
-                            onClick = { /* TODO: Navigate to profile */ }
+                            onClick = { navController.navigate(Screen.Profile.route) }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,

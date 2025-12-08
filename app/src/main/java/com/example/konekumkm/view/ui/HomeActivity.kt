@@ -185,7 +185,10 @@ class HomeActivity : ComponentActivity() {
                                 val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
                                 com.example.konekumkm.view.ui.cart.OrderSuccessScreen(navController, orderId)
                             }
-                            
+
+                            composable(Screen.Profile.route) {
+                                com.example.konekumkm.view.ui.profile.ProfileScreen(navController)
+                            }
                             composable("admin_dashboard") {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
