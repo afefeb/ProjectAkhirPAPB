@@ -14,13 +14,20 @@ import kotlinx.coroutines.launch
 class AddUmkmViewModel(application: Application) : AndroidViewModel(application) {
 
     private val umkmRepository = UMKMRepository()
-
     private val imageRepository = ImageRepository(application.applicationContext)
 
     private val _uiState = MutableStateFlow<AddState>(AddState.Idle)
     val uiState: StateFlow<AddState> = _uiState
 
-    fun submitUMKM(name: String, category: String, address: String, desc: String, imageUri: Uri?, lat: Double, lng: Double) {
+    fun submitUMKM(
+        name: String,
+        category: String,
+        address: String,
+        desc: String,
+        imageUri: Uri?,
+        lat: Double,
+        lng: Double
+    ) {
         viewModelScope.launch {
             _uiState.value = AddState.Loading
 
@@ -44,22 +51,25 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
                 description = desc,
                 imageUrl = finalImageString,
                 latitude = lat,
-                longitude = lng
+                longitude = lng,
+                rating = 0.0
             )
 
             umkmRepository.addUMKM(newUMKM) { success ->
-                if (success) _uiState.value = AddState.Success
-                else _uiState.value = AddState.Error("Gagal simpan ke database")
+                _uiState.value =
+                    if (success) AddState.Success else AddState.Error("Gagal simpan ke database")
             }
         }
     }
 
-    fun resetState() { _uiState.value = AddState.Idle }
-}
+    fun resetState() {
+        _uiState.value = AddState.Idle
+    }
 
-sealed class AddState {
-    object Idle : AddState()
-    object Loading : AddState()
-    object Success : AddState()
-    data class Error(val message: String) : AddState()
+    sealed class AddState {
+        object Idle : AddState()
+        object Loading : AddState()
+        object Success : AddState()
+        data class Error(val message: String) : AddState()
+    }
 }

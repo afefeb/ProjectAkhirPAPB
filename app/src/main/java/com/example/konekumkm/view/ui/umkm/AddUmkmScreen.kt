@@ -30,7 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.konekumkm.view.viewmodel.AddState
+import com.example.konekumkm.view.viewmodel.AddUmkmViewModel.AddState
 import com.example.konekumkm.view.viewmodel.AddUmkmViewModel
 import com.google.android.gms.location.LocationServices
 
