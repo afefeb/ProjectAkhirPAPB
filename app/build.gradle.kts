@@ -67,13 +67,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")
 
     // 5. Kamera (Materi: CameraX)
-    val cameraxVersion = "1.3.0"
-    implementation("androidx.camera:camera-core:$cameraxVersion")
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-view:$cameraxVersion")
-
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
 
     // ROOM
     implementation("androidx.room:room-runtime:2.6.1")
