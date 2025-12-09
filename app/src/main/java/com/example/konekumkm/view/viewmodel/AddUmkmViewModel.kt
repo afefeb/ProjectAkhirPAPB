@@ -36,11 +36,10 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
                 return@launch
             }
 
-            val base64Result = imageRepository.imageUriToBase64(imageUri)
-            val finalImageString = base64Result.getOrNull()
+            val localUriString = imageRepository.saveImageToFile(imageUri)
 
-            if (finalImageString == null) {
-                _uiState.value = AddState.Error("Gagal memproses gambar (Terlalu besar/Corrupt)")
+            if (localUriString == null) {
+                _uiState.value = AddState.Error("Gagal memproses gambar")
                 return@launch
             }
 
@@ -49,7 +48,7 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
                 category = category,
                 address = address,
                 description = desc,
-                imageUrl = finalImageString,
+                imageUrl = localUriString, // simpan URI string lokal
                 latitude = lat,
                 longitude = lng,
                 rating = 0.0
@@ -73,3 +72,4 @@ class AddUmkmViewModel(application: Application) : AndroidViewModel(application)
         data class Error(val message: String) : AddState()
     }
 }
+

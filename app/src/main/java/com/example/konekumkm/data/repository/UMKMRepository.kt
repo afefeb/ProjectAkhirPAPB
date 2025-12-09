@@ -42,6 +42,7 @@ class UMKMRepository {
         val newUMKM = hashMapOf(
             "name" to umkm.name,
             "category" to umkm.category,
+            "address" to umkm.address,
             "description" to umkm.description,
             "imageUrl" to umkm.imageUrl,
 

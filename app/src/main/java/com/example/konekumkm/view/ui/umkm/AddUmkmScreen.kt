@@ -33,6 +33,7 @@ import coil.compose.AsyncImage
 import com.example.konekumkm.view.viewmodel.AddUmkmViewModel.AddState
 import com.example.konekumkm.view.viewmodel.AddUmkmViewModel
 import com.google.android.gms.location.LocationServices
+import java.io.File
 
 // Brand colors
 val BrandBlue = Color(0xFF6B9BD1)
@@ -70,35 +71,43 @@ fun AddUmkmScreen(
         uri?.let { imageUri = it }
     }
 
-    // Camera Launcher (using default camera)
+// Variabel untuk menampung URI sementara
+    var tempUri by remember { mutableStateOf<Uri?>(null) }
+
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (!success) {
-            imageUri = null
+        if (success) {
+            tempUri?.let { imageUri = it }  // pakai untuk Compose
+            Toast.makeText(context, "Foto berhasil diambil", Toast.LENGTH_SHORT).show()
+        } else {
             Toast.makeText(context, "Gagal mengambil foto", Toast.LENGTH_SHORT).show()
+            tempUri = null
         }
     }
 
-    // Camera Permission
+
+
+// Camera Permission
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Create temp file for camera
+            val cameraDir = File(context.cacheDir, "umkm_photos").apply { mkdirs() }
+            val tempFile = File(cameraDir, "temp_image_${System.currentTimeMillis()}.jpg")
             val uri = androidx.core.content.FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
-                java.io.File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg").apply {
-                    createNewFile()
-                }
+                tempFile
             )
-            imageUri = uri
-            cameraLauncher.launch(uri)
+            tempUri = uri // simpan di state untuk Compose
+            cameraLauncher.launch(uri) // pakai uri lokal non-null
         } else {
             Toast.makeText(context, "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
     // Location Permission
     val locationPermissionLauncher = rememberLauncherForActivityResult(

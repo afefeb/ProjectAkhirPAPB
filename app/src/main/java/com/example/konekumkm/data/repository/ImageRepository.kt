@@ -8,6 +8,8 @@ import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 
 class ImageRepository(private val context: Context) { // Butuh Context
@@ -43,6 +45,28 @@ class ImageRepository(private val context: Context) { // Butuh Context
             } catch (e: Exception) {
                 Result.failure(e)
             }
+        }
+    }
+    fun saveImageToFile(uri: Uri): String? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+
+            if (bitmap == null) return null
+
+            // Simpan ke cache folder app
+            val file = File(context.cacheDir, "umkm_${System.currentTimeMillis()}.jpg")
+            val out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            out.flush()
+            out.close()
+
+            // Return path lokal sebagai string
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }
